@@ -8,6 +8,21 @@
   not run as expected. 
 </p>
 
+<div data-controller="key">
+  <button data-action="key#generate">
+    Generate "params"
+  </button>
+
+  <ul>
+    <li data-key-target="accountid"></li>
+    <li data-key-target="publickey"></li>
+    <li data-key-target="allkey"></li>
+  </ul>
+</div>
+
+
+
+
 <%= form_with model: @user, local: true do |f| %>
   <%= f.hidden_field :account_id , value: params[:account_id] %>
   <%= f.hidden_field :public_key, value: params[:public_key] %>

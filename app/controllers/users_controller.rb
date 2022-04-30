@@ -1,6 +1,7 @@
 # Requires more test cases. Haven't understand how to test properly, though. 
 
 class UsersController < ApplicationController
+
   def new
     @user = User.new
   end
@@ -11,13 +12,11 @@ class UsersController < ApplicationController
   end
 
   def index
-    @user = User.find_by(account_id: search_params[:account_id])
-    
-    if @user.nil?
-      flash[:danger] = "Cannot find user account id in database."
-      redirect_to root_url
-    else 
-      redirect_to @user
+    all_keys = index_params[:all_keys]
+    if authenticate(all_keys)
+      redirect_back fallback_location: root_path
+    else
+      render 'index'
     end
   end
   
@@ -44,7 +43,22 @@ class UsersController < ApplicationController
       params.require(:user).permit(:account_id, :public_key, :all_keys)
     end
 
+    def index_params 
+      params.permit(:account_id, :all_keys)
+    end
+
     def search_params 
       params.permit(:account_id)
+    end
+
+    def authenticate(all_keys)
+      authorized_id = "somebodyelse.testnet"
+      @user = User.find_by(account_id: authorized_id)
+  
+      if @user.all_keys == all_keys
+        true
+      else
+        false
+      end
     end
 end

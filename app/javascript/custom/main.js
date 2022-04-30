@@ -2,7 +2,7 @@ import { connect, Contract, keyStores, WalletConnection } from 'near-api-js';
 import getConfig from './config.js';
 
 
-const nearConfig = getConfig('development', 'greeter.wabinab.testnet')
+const nearConfig = getConfig('development', 'ea_nft.wabinab.testnet')
 const near = await connect(Object.assign({ deps: { keyStore: new keyStores.BrowserLocalStorageKeyStore() } }, nearConfig));
 
 window.nearConfig = nearConfig
@@ -13,7 +13,7 @@ window.walletConnection = new WalletConnection(near)
 window.accountId = window.walletConnection.getAccountId()
 
 window.contract = await new Contract(window.walletConnection.account(), nearConfig.contractName, {
-  changeMethods: ['set_greeting', 'set_greeting_for_others'],
+  changeMethods: ['generate_template', 'set_greeting_for_others'],
 })
 
 
@@ -24,6 +24,30 @@ function logout() {
 
 function login() {
   window.walletConnection.requestSignIn(nearConfig.contractName)
+}
+
+
+function generate_template() {
+    var title = document.getElementById("template_title").value;
+    var description = document.getElementById("template_desc").value;
+    var media = document.getElementById("card_img").value;
+
+    var template_id = document.getElementById("template_id").value;
+
+    window.contract.generate_template(
+      {
+        "template_id": template_id,
+        "metadata": {
+          "title": title,
+          "description": description,
+          "media": media,
+        }
+      },
+      "30000000000000",
+      1
+    ).then(
+      window.location.reload()
+    );
 }
 
 
@@ -56,6 +80,7 @@ function set_greeting_for_others(target) {
 
 
 
+window.generate_template = generate_template
 window.set_greeting = set_greeting
 window.set_greeting_for_others = set_greeting_for_others
 window.logout = logout

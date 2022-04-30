@@ -1,0 +1,27 @@
+<h1 class="text-center">
+  Admin Page (Unencrypted yet)
+</h1>
+
+<div class="col-md-6 offset-md-3 pb-6 pt-4">
+  <h2 class="text-center">Define Template</h2>
+  <%= form_with(model: @cards, remote: true, data: { turbo: false }) do |f| %>
+    <%= f.label "Template ID" %>
+    <%= f.text_field '', class: 'form-control', id: 'template_id' %>
+    <%= f.label "Title:" %>
+    <%= f.text_field '', class: 'form-control', id: 'template_title' %>
+    <%= f.label "Description:" %>
+    <%= f.text_field '', class: 'form-control', id: 'template_desc' %>
+    <%= f.label "Image URL:" %>
+    <%= f.text_field '', class: 'form-control', id: 'card_img' %>
+
+    <div class="pt-3 d-flex justify-content-center align-items-center">
+      <%= link_to "Generate Template", "javascript:generate_template()", 
+          class: "btn btn-outline-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<div>
+  <h2 class="text-center">Templates </h2>
+  <p>Various cards. Also need make a view function.</p>
+</div>
