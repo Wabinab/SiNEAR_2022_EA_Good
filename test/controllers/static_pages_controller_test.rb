@@ -10,4 +10,9 @@ class StaticPagesControllerTest < ActionDispatch::IntegrationTest
     get home_url
     assert_response :success
   end
+
+  test "should get donate" do 
+    get donate_url 
+    assert_response :success
+  end
 end

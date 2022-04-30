@@ -1,0 +1,39 @@
+<div class="col-md-6 offset-md-3 pt-5 pb-5 bg-warning bg-opacity-10">
+  <h1 class="text-center">Donate</h1>
+
+  <%= form_with(url: "/donate", method: :post) do |f| %>
+    <%= f.label "Amount (in NEAR): ", class: "pb-3 offset-md-1" %>
+
+    <% @donate_target.each do |name, id| %>
+      <div class="row g-3 align-items-center">
+        <div class="col-6 offset-md-1"> 
+          <%= f.label name %>
+        </div>
+        <div class="col-3">
+          <%= f.number_field '', step: 0.01, class: 'form-control', id: id %>
+        </div>
+        <div class="col-auto fs-3" >
+          Ⓝ
+        </div>
+      </div>
+    <% end %>
+
+    <div class="p-5 text-center">
+      <div data-controller="donate">
+        <a href="#" data-action="donate#which"
+            data-donate-target="shown"
+            class="btn btn-outline-success align-items-center">
+            Donate
+        </a>
+      </div>
+    </div>
+
+
+  <% end %>
+</div>
+
+<p>
+<small>
+Design idea: <%= link_to "Givewell donate", "https://secure.givewell.org/" %>
+</small>
+</p>

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get 'home', to: 'static_pages#home'
+  get 'donate', to: 'static_pages#donate'
 
   get 'users', to: 'users#index'
   get '/users/:account_id', to: 'users#show'
