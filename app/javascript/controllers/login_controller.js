@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "slide", "name" ]
+  static targets = [ "slide", "name", "donate" ]
 
   static values = {current: Boolean}
 
@@ -9,6 +9,7 @@ export default class extends Controller {
     this.currentValue = window.walletConnection.isSignedIn()
     this.showCurrentLogin()
     this.showCurrentName()
+    this.showCurrentDonate()
   }
 
   switch() {
@@ -21,6 +22,7 @@ export default class extends Controller {
     this.currentValue = !this.currentValue
     this.showCurrentLogin()
     this.showCurrentName()
+    this;this.showCurrentDonate()
   }
 
   showCurrentLogin() {
@@ -40,6 +42,14 @@ export default class extends Controller {
       element.hidden = !this.currentValue
       element.innerText = account_id
       element.href = "/users/" + account_id.replaceAll('.', '-');
+    })
+  }
+
+  showCurrentDonate() {
+    this.donateTargets.forEach((element, _index) => {
+      element.hidden = !this.currentValue
+      element.innerText = "Donate"
+      element.href = "/donate"
     })
   }
 }
