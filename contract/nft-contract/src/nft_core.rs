@@ -7,6 +7,15 @@ const MIN_GAS_FOR_NFT_TRANSFER_CALL: Gas = Gas(100_000_000_000_000);
 const NO_DEPOSIT: Balance = 0;
 
 pub trait NonFungibleTokenCore {
+    /// Generate Metadata Template;
+    /// Originally taken from https://github.com/Wabinab/SiNEAR_2022_Zoo_NFT/blob/main/contract/market_contract/src/sale.rs
+    /// but slightly modified. 
+    fn generate_template(
+      &mut self,
+      template_id: Category,
+      metadata: TokenMetadata,
+    );
+
     //transfers an NFT to a receiver ID
     fn nft_transfer(
         &mut self,
@@ -81,6 +90,29 @@ trait NonFungibleTokenResolver {
 
 #[near_bindgen]
 impl NonFungibleTokenCore for Contract {
+
+    /// Generate metadata template so no need to specify in frontend. 
+    fn generate_template(
+      &mut self,
+      template_id: Category,
+      metadata: TokenMetadata,
+    ) {
+      assert_one_yocto();
+      // Require called by authorized people only is skipped. 
+      // We can implement it in the future. 
+
+      // Since item starts from 0, we find length first before inserting. 
+      let category_len = self.categories.len();
+      self.categories.push(&template_id);
+
+      // Then update the metadata: 
+      self.token_metadata_by_cat_id.insert(
+        &(category_len as u16),
+        &metadata
+      );
+
+      // I think we're done. 
+    }
 
     //implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver. 
     #[payable]

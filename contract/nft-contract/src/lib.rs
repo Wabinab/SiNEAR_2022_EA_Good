@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet};
+use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet, Vector};
 use near_sdk::json_types::{Base64VecU8, U128};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
@@ -48,6 +48,17 @@ pub struct Contract {
 
     // keeps track of the metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,
+
+    /// Vector of the categories
+    pub categories: Vector<Category>,
+
+    /// Each owner map to a category, to keep track of what tokens
+    /// they already have, in order. Key is a number (signifying
+    /// position in `categories` mapped to TokenId)
+    pub tokens_per_owner_ordered: LookupMap<AccountId, HashMap<CategoryId, TokenId>>,
+
+    /// List of token metadata creator
+    pub token_metadata_by_cat_id: LookupMap<CategoryId, TokenMetadata>,
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -61,6 +72,9 @@ pub enum StorageKey {
     TokensPerType,
     TokensPerTypeInner { token_type_hash: CryptoHash },
     TokenTypesLocked,
+    Categories,
+    TokensOrdered,
+    MetadataCatId,
 }
 
 #[near_bindgen]
@@ -112,9 +126,23 @@ impl Contract {
             StorageKey::NFTContractMetadata.try_to_vec().unwrap(),
             Some(&metadata),  // if extra passed in
           ),
+
+          categories: Vector::new(StorageKey::Categories.try_to_vec().unwrap()),
+          tokens_per_owner_ordered: LookupMap::new(
+            StorageKey::TokensOrdered.try_to_vec().unwrap()
+          ),
+
+          token_metadata_by_cat_id: LookupMap::new(
+            StorageKey::MetadataCatId.try_to_vec().unwrap()
+          ),
         };
 
         // return the contract object
         this
+    }
+
+
+    pub fn get_categories(&self) -> Vec<Category> {
+      self.categories.to_vec()
     }
 }

@@ -2,6 +2,7 @@ use crate::*;
 use near_sdk::require;
 
 
+const GAS_PER_DONATE: Gas = Gas(20_000_000_000_000);
 const GAS_FOR_MINTING: Gas = Gas(10_000_000_000_000);  // 10 TGas.
 
 
@@ -21,10 +22,102 @@ trait ExtSelf {
       token_id: TokenId,
       old_donate_amount: f64,
     );
+
+    /// These two functions can be called by non-contract. 
+    /// We use callback because another function needs to call
+    /// them via a callback. 
+    fn donate_and_update(
+      &mut self,
+      token_id: TokenId,
+      donate_amount: f64,
+    );
+
+    fn donate_and_mint(
+      &mut self,
+      token_id: TokenId,
+      metadata: TokenMetadata,
+      donate_amount: f64,
+    );
 }
 
 #[near_bindgen]
 impl Contract {
+    /// Mass donate and mint or donate and update depending on whether token
+    /// exist or not. 
+    #[payable]
+    pub fn minting_interface(
+      &mut self,
+      suffix_token_id: String,
+      hash_of_amounts: HashMap<CategoryId, f64>,
+      issued_at: Option<u64>,
+    ) {
+      require!(
+        env::predecessor_account_id() == env::signer_account_id(),
+        "This method can only be called by signer."
+      );
+
+      let mut token_id_list: HashMap<CategoryId, TokenId> = match 
+          self.tokens_per_owner_ordered.get(&env::predecessor_account_id()) 
+      {
+        Some(value) => value,
+        None => HashMap::new()
+      };
+      
+
+      for (id, amount) in hash_of_amounts {
+        // Check if token already exist. 
+        if let Some(token_id) = token_id_list.get(&id) {
+          ext_self::donate_and_update(
+            token_id.clone(),
+            amount,
+
+            env::current_account_id(),
+            near_to_yoctonear(amount),
+            GAS_PER_DONATE,
+          );
+        } else {
+          // Get prefix
+          let prefix: String = expect_lightweight(
+            self.categories.get(id.clone() as u64),
+            "Cannot find category. Please contact support."
+          );
+
+          // Create token_id based on suffix. 
+          let token_id: TokenId = prefix + suffix_token_id.as_str();
+
+          // Add to list
+          token_id_list.insert(id.clone(), token_id.clone());
+
+          // Get metadata from lookupmap. 
+          let mut metadata = expect_lightweight(
+            self.token_metadata_by_cat_id.get(&id),
+            "Found category but not its metadata. Maybe forgot to map?"
+          );
+
+          metadata.issued_at = issued_at;
+
+          // Cross contract call. 
+          ext_self::donate_and_mint(
+            token_id,
+            metadata,
+            amount,
+
+            env::current_account_id(),
+            near_to_yoctonear(amount),
+            GAS_PER_DONATE
+          );
+        }
+      }
+
+      // Insert token id list back.
+      // Weakness: if something fails, this will not get deleted... 
+      // like during minting. 
+      self.tokens_per_owner_ordered.insert(
+        &env::predecessor_account_id(), 
+        &token_id_list
+      );
+    }
+
 
     /// Donate money and we'll mint and nft for you. 
     /// donate_amount is not U128 to reduce gas cost? We infer from f64 instead. 
