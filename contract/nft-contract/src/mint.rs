@@ -44,6 +44,8 @@ trait ExtSelf {
 impl Contract {
     /// Mass donate and mint or donate and update depending on whether token
     /// exist or not. 
+    /// 
+    /// To ensure no subtraction overflow, please attach more than required. 
     #[payable]
     pub fn minting_interface(
       &mut self,
