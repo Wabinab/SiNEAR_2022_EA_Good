@@ -1,10 +1,12 @@
+<% define_constants %>
+
 <div class="col-md-6 offset-md-3 pt-5 pb-5 bg-warning bg-opacity-10">
   <h1 class="text-center">Donate</h1>
 
   <%= form_with(url: "/donate", method: :post) do |f| %>
     <%= f.label "Amount (in NEAR): ", class: "pb-3 offset-md-1" %>
 
-    <% @donate_target.each do |name, id| %>
+    <% get_list_to_donate.each do |id, name| %>
       <div class="row g-3 align-items-center">
         <div class="col-6 offset-md-1"> 
           <%= f.label name %>

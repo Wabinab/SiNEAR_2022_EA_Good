@@ -31,14 +31,17 @@ module UsersHelper
     
   end
 
-  def get_greeting(user)
-    account_id = user.account_id
-    @query.function(
+  def get_list_to_donate 
+    data = @query.function(
       @contract,
-      'get_greeting',
-      {
-        "account_id": account_id
-      }
-    )["result"]["result"].pack('c*')
+      'get_list_to_donate',
+      {}
+    )["result"]["result"]
+    
+    if data.nil?
+      {}
+    else 
+      JSON.parse(data.pack('c*'))
+    end
   end
 end
