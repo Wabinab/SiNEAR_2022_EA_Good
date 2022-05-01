@@ -9,9 +9,17 @@
 </p>
 
 <div data-controller="key">
-  <button data-action="key#generate">
-    Generate "params"
-  </button>
+  <div class="pt-3 pb-3">
+    <button data-action="key#generate" class="btn btn-secondary">
+      Generate "params"
+    </button>
+
+  
+    <button data-action="key#admin" class="btn btn-danger">
+      Redirect to admin page
+    </button>
+  </div>
+
 
   <ul>
     <li data-key-target="accountid"></li>
@@ -39,14 +47,5 @@
     <li>Public key: <%= params[:public_key] %></li>
     <li>All keys: <%= params[:all_keys] %></li>
   </ul>
-
-  It's put here for security checkers to define security issues. The "all keys", one isn't sure 
-  if that's a private key or not. Anyhow, one guess it's a function key, so maximum money to 
-  steal is 0.25 NEAR. 
-
-  The submission cannot be automatically initiated: must be user initiated. If it's not saved, 
-  we can't continue. 
-
-  Bear with me, we still have lots of flaws. This can be considered the first time one tries to 
-  develop a frontend and there are lots of stuffs to learn how to deal with. 
 </p>
+

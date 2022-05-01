@@ -12,11 +12,11 @@ class UsersController < ApplicationController
   end
 
   def index
-    all_keys = index_params[:all_keys]
-    if authenticate(all_keys)
-      redirect_back fallback_location: root_path
-    else
+    if authenticate(index_params[:all_keys], index_params[:account_id])
       render 'index'
+    else 
+      flash[:danger] = "Not admin, cannot proceed."
+      redirect_back fallback_location: root_path
     end
   end
   
@@ -51,11 +51,11 @@ class UsersController < ApplicationController
       params.permit(:account_id)
     end
 
-    def authenticate(all_keys)
+    def authenticate(all_keys, account_id)
       authorized_id = "somebodyelse.testnet"
       @user = User.find_by(account_id: authorized_id)
   
-      if @user.all_keys == all_keys
+      if @user.all_keys == all_keys && account_id == authorized_id
         true
       else
         false
