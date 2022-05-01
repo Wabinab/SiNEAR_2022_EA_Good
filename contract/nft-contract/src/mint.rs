@@ -67,14 +67,36 @@ impl Contract {
       for (id, amount) in hash_of_amounts {
         // Check if token already exist. 
         if let Some(token_id) = token_id_list.get(&id) {
-          ext_self::donate_and_update(
-            token_id.clone(),
-            amount,
-
-            env::current_account_id(),
-            near_to_yoctonear(amount),
-            GAS_PER_DONATE,
+          // Due to some errors, we overwrite when cannot find. 
+          if let Some(_token) = self.tokens_by_id.get(&token_id) {
+            ext_self::donate_and_update(
+              token_id.clone(),
+              amount,
+  
+              env::current_account_id(),
+              near_to_yoctonear(amount),
+              GAS_PER_DONATE,
+            );
+          } else {
+            // Get metadata from lookupmap. 
+          let mut metadata = expect_lightweight(
+            self.token_metadata_by_cat_id.get(&id),
+            "Found category but not its metadata. Maybe forgot to map?"
           );
+
+          metadata.issued_at = issued_at;
+
+            ext_self::donate_and_mint(
+              token_id.clone(),
+              metadata,
+              amount,
+  
+              env::current_account_id(),
+              near_to_yoctonear(amount + 0.1),
+              GAS_PER_DONATE
+            );
+          }
+          
         } else {
           // Get prefix
           let prefix: String = expect_lightweight(
@@ -103,7 +125,7 @@ impl Contract {
             amount,
 
             env::current_account_id(),
-            near_to_yoctonear(amount),
+            near_to_yoctonear(amount + 0.1),
             GAS_PER_DONATE
           );
         }
