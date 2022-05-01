@@ -141,6 +141,13 @@ impl Contract {
         }
       }
 
+      let refund_amount = env::attached_deposit() - total_use;
+
+      if refund_amount > 0 {
+        Promise::new(env::signer_account_id())
+            .transfer(refund_amount);
+      }
+
       // Insert token id list back.
       // Weakness: if something fails, this will not get deleted... 
       // like during minting. 
