@@ -92,12 +92,18 @@ trait NonFungibleTokenResolver {
 impl NonFungibleTokenCore for Contract {
 
     /// Generate metadata template so no need to specify in frontend. 
+    #[payable]
     fn generate_template(
       &mut self,
       template_id: Category,
       metadata: TokenMetadata,
     ) {
-      assert_one_yocto();
+      let initial_storage_usage = env::storage_usage();
+
+      require!(
+        env::attached_deposit() >= near_to_yoctonear(0.1),
+        "Please attach more than 0.1N for storage. Extra will be refunded."
+      );
       // Require called by authorized people only is skipped. 
       // We can implement it in the future. 
 
@@ -112,6 +118,9 @@ impl NonFungibleTokenCore for Contract {
       );
 
       // I think we're done. 
+      let required_storage = env::storage_usage() - initial_storage_usage;
+
+      refund_deposit(required_storage, env::predecessor_account_id());
     }
 
     //implementation of the nft_transfer method. This transfers the NFT from the current owner to the receiver. 
