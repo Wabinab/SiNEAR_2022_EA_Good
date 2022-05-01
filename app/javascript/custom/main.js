@@ -1,4 +1,4 @@
-import { connect, Contract, keyStores, WalletConnection } from 'near-api-js';
+import { connect, Contract, keyStores, WalletConnection, utils } from 'near-api-js';
 import getConfig from './config.js';
 
 
@@ -44,23 +44,10 @@ function generate_template() {
         }
       },
       "30000000000000",
-      1
+      utils.format.parseNearAmount("0.1")
     ).then(
       window.location.reload()
     );
-}
-
-
-function set_greeting() {
-  var message = document.getElementById("form_message").value;
-  window.contract.set_greeting({"message": message})
-  .then(
-    value => {
-      alert("Successful set_greeting for yourself.");
-      window.location.reload();
-    },
-    err => alert(err),
-  );
 }
 
 

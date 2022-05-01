@@ -19,12 +19,12 @@ module UsersHelper
   def get_templates
     data = @query.function(
       @contract,
-      'get_metadatas',
+      'view_metadatas',
       {}
     )["result"]["result"]
     
     if data.nil?
-      ""
+      {}
     else
       JSON.parse(data.pack('c*'))  
     end

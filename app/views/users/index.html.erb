@@ -25,5 +25,15 @@
 
 <div>
   <h2 class="text-center">Templates </h2>
-  <p><%= get_templates %></p>
+  <div class="d-flex flex-row gap-3 flex-wrap">
+    <% get_templates.each do |t| %>
+      <div class="card" style="width: 18rem;">
+        <%= image_tag(t["media"]) %>
+        <div class="card-body">
+          <h5 class="card-title"><%= t["title"] %></h5>
+          <p class="card-text"><%= t["description"] %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
