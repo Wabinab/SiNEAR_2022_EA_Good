@@ -142,9 +142,31 @@ impl Contract {
     }
 
 
-    // pub fn get_owner_donation(&self) -> HashMap<Category, f64> {
+    pub fn get_owner_donation(&self, account_id: AccountId) -> HashMap<String, String> {
+      if let Some(hashmap) = self.tokens_per_owner_ordered.get(&account_id) {
+        let mut return_map = HashMap::new();
 
-    // }
+        for (id, token_id) in hashmap {
+          let metadata = expect_lightweight(
+            self.token_metadata_by_cat_id.get(&id),
+            "Found category but not its metadata. Maybe forgot to map?"
+          );
+          let title = metadata.title.unwrap();
+
+          let token = expect_lightweight(
+            self.tokens_by_id.get(&token_id),
+            "Cannot find this token in library"
+          );
+          let donate_amount = token.donate_amount;
+
+          return_map.insert(title, donate_amount);
+        }
+
+        return_map  // donate amount stringified.
+      } else {
+        HashMap::new()
+      }
+    }
 
 
     pub fn get_categories(&self) -> Vec<Category> {
