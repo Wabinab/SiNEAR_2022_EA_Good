@@ -44,4 +44,22 @@ module UsersHelper
       JSON.parse(data.pack('c*'))
     end
   end
+
+  def get_owner_donation(user)
+    account_id = user.account_id
+
+    data = @query.function(
+      @contract,
+      'get_owner_donation',
+      {
+        "account_id": account_id
+      }
+    )["result"]["result"]
+
+    if data.nil?
+      {}
+    else 
+      JSON.parse(data.pack('c*'))
+    end
+  end
 end

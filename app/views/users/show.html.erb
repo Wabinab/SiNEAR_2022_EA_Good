@@ -9,4 +9,24 @@
   </div>
 </div>
 
+<div class="row pt-5 pb-5">
+  <p>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Amount (Ⓝ)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% (get_owner_donation @user).each do |name, amount| %>
+          <tr>
+            <td><%= name %></td>
+            <td><%= amount %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 
+  </p>
+</div>
