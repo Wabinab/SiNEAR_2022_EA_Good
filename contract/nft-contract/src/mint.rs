@@ -62,6 +62,8 @@ impl Contract {
         Some(value) => value,
         None => HashMap::new()
       };
+
+      let mut total_use: u128 = 0;
       
 
       for (id, amount) in hash_of_amounts {
@@ -69,15 +71,20 @@ impl Contract {
         if let Some(token_id) = token_id_list.get(&id) {
           // Due to some errors, we overwrite when cannot find. 
           if let Some(_token) = self.tokens_by_id.get(&token_id) {
+            let attached = near_to_yoctonear(amount);
+            
+            total_use += attached;
             ext_self::donate_and_update(
               token_id.clone(),
               amount,
   
               env::current_account_id(),
-              near_to_yoctonear(amount),
+              attached,
               GAS_PER_DONATE,
             );
           } else {
+          let attached = near_to_yoctonear(amount + 0.1);
+          total_use += attached;
             // Get metadata from lookupmap. 
           let mut metadata = expect_lightweight(
             self.token_metadata_by_cat_id.get(&id),
@@ -92,12 +99,15 @@ impl Contract {
               amount,
   
               env::current_account_id(),
-              near_to_yoctonear(amount + 0.1),
+              attached,
               GAS_PER_DONATE
             );
           }
           
         } else {
+          let attached = near_to_yoctonear(amount + 0.1);
+          total_use += attached;
+
           // Get prefix
           let prefix: String = expect_lightweight(
             self.categories.get(id.clone() as u64),
@@ -125,7 +135,7 @@ impl Contract {
             amount,
 
             env::current_account_id(),
-            near_to_yoctonear(amount + 0.1),
+            attached,
             GAS_PER_DONATE
           );
         }

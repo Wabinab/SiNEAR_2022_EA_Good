@@ -64,7 +64,7 @@ function minting_interface(suffix_token_id) {
 
           if (!isNaN(amount)) {
             hash_of_amounts[id] = amount;
-            sum += amount;
+            sum += (amount + 0.1);
           }
         }
 
