@@ -150,4 +150,17 @@ impl Contract {
     pub fn view_metadatas(&self) -> Vec<TokenMetadata> {
       self.token_metadata_by_cat_id.values_as_vector().to_vec()
     }
+
+
+    pub fn get_list_to_donate(&self) -> HashMap<String, String> {
+      let mut temp = HashMap::new();
+
+      for (k, v) in self.token_metadata_by_cat_id.iter() {
+        let id = self.categories.get(k as u64).unwrap();
+        let title = v.title.unwrap();
+        temp.insert(id, title);
+      }
+
+      temp
+    }
 }
