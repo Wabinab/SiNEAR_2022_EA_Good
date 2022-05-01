@@ -7,7 +7,7 @@ module UsersHelper
     @conf = NearApi::Config.new(node_url: @node_url)
     @query = NearApi::Query.new(config = @conf)
 
-    @contract = 'greeter.wabinab.testnet'
+    @contract = 'ea_nft.wabinab.testnet'
   end
 
   def gravatar_for(user)
@@ -16,22 +16,26 @@ module UsersHelper
     image_tag(gravatar_url, class: "gravatar")
   end
 
+  def get_templates
+    data = @query.function(
+      @contract,
+      'get_metadatas',
+      {}
+    )["result"]["result"]
+    
+    if data.nil?
+      ""
+    else
+      JSON.parse(data.pack('c*'))  
+    end
+    
+  end
+
   def get_greeting(user)
     account_id = user.account_id
     @query.function(
       @contract,
       'get_greeting',
-      {
-        "account_id": account_id
-      }
-    )["result"]["result"].pack('c*')
-  end
-
-  def get_others_set_greeting(user)
-    account_id = user.account_id
-    @query.function(
-      @contract,
-      'get_others_set_greeting',
       {
         "account_id": account_id
       }
