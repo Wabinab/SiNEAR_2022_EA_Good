@@ -13,7 +13,8 @@ window.walletConnection = new WalletConnection(near)
 window.accountId = window.walletConnection.getAccountId()
 
 window.contract = await new Contract(window.walletConnection.account(), nearConfig.contractName, {
-  changeMethods: ['generate_template', 'set_greeting_for_others'],
+  viewMethods: ['get_id_by_category'],
+  changeMethods: ['generate_template', 'minting_interface'],
 })
 
 
@@ -51,24 +52,43 @@ function generate_template() {
 }
 
 
-function set_greeting_for_others(target) {
-  var message = document.getElementById("someone_message").value;
-  window.contract.set_greeting_for_others({
-    "target": target,
-    "message": message
-  }).then(
-    value => {
-      alert("Successful called set_greeting_for_others.");
-      window.location.reload();
-    },
-    err => alert(err),
-  );
+function minting_interface(suffix_token_id) {
+    window.contract.get_id_by_category().then(
+      (a_hashMap) => {
+        var hash_of_amounts = {};
+        var sum = 0.1;  // for storage.
+
+        for (var key in a_hashMap) {
+          let id = parseInt(a_hashMap[key]);
+          let amount = parseFloat(document.getElementById(key).value);
+
+          if (!isNaN(amount)) {
+            hash_of_amounts[id] = amount;
+            sum += amount;
+          }
+        }
+
+        window.contract.minting_interface(
+          {
+            "suffix_token_id": suffix_token_id,
+            "hash_of_amounts": hash_of_amounts,
+            "issued_at": Math.floor(Date.now() / 1000)
+          },
+          "300000000000000",  // 300 TGas
+          utils.format.parseNearAmount(sum.toPrecision(2)),
+        ).then(
+          window.location.reload()
+        );
+      }
+    )
+    
 }
 
 
 
+
+
 window.generate_template = generate_template
-window.set_greeting = set_greeting
-window.set_greeting_for_others = set_greeting_for_others
+window.minting_interface = minting_interface
 window.logout = logout
 window.login = login

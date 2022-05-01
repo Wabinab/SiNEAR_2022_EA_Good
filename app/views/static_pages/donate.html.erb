@@ -21,14 +21,22 @@
     <% end %>
 
     <div class="p-5 text-center">
-      <div data-controller="donate">
+      <%# <div data-controller="donate">
         <a href="#" data-action="donate#which"
             data-donate-target="shown"
             class="btn btn-outline-success align-items-center">
             Donate
         </a>
-      </div>
+      </div> %>
+
+      <%= link_to "Donate", 
+        "javascript:minting_interface('#{@suffix_token_id}')", 
+        class: "btn btn-outline-success align-items-center" %>
     </div>
+
+
+
+    
 
 
   <% end %>
