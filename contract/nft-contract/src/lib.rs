@@ -163,4 +163,16 @@ impl Contract {
 
       temp
     }
+
+
+    pub fn get_id_by_category(&self) -> HashMap<String, u16> {
+      let mut temp = HashMap::new();
+
+      for (k, _v) in self.token_metadata_by_cat_id.iter() {
+        let id = self.categories.get(k.clone() as u64).unwrap();
+        temp.insert(id, k);
+      }
+
+      temp
+    }
 }
