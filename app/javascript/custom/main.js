@@ -56,7 +56,7 @@ function minting_interface(suffix_token_id) {
     window.contract.get_id_by_category().then(
       (a_hashMap) => {
         var hash_of_amounts = {};
-        var sum = 0.1;  // for storage.
+        var sum = 0;  // for storage.
 
         for (var key in a_hashMap) {
           let id = parseInt(a_hashMap[key]);
