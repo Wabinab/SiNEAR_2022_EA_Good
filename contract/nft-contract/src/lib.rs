@@ -142,6 +142,11 @@ impl Contract {
     }
 
 
+    // pub fn get_owner_donation(&self) -> HashMap<Category, f64> {
+
+    // }
+
+
     pub fn get_categories(&self) -> Vec<Category> {
       self.categories.to_vec()
     }
