@@ -58,7 +58,7 @@ pub struct Contract {
     pub tokens_per_owner_ordered: LookupMap<AccountId, HashMap<CategoryId, TokenId>>,
 
     /// List of token metadata creator
-    pub token_metadata_by_cat_id: LookupMap<CategoryId, TokenMetadata>,
+    pub token_metadata_by_cat_id: UnorderedMap<CategoryId, TokenMetadata>,
 }
 
 /// Helper structure for keys of the persistent collections.
@@ -132,7 +132,7 @@ impl Contract {
             StorageKey::TokensOrdered.try_to_vec().unwrap()
           ),
 
-          token_metadata_by_cat_id: LookupMap::new(
+          token_metadata_by_cat_id: UnorderedMap::new(
             StorageKey::MetadataCatId.try_to_vec().unwrap()
           ),
         };
@@ -144,5 +144,10 @@ impl Contract {
 
     pub fn get_categories(&self) -> Vec<Category> {
       self.categories.to_vec()
+    }
+
+
+    pub fn view_metadatas(&self) -> Vec<TokenMetadata> {
+      self.token_metadata_by_cat_id.values_as_vector().to_vec()
     }
 }
